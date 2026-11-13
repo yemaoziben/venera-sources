@@ -7,46 +7,46 @@
   if (!r.location) r.location = { hostname: 'manhuafree.com', href: 'https://manhuafree.com/' };
 })();
 // ---- polyfill：真机 JS 环境可能缺 atob / TextDecoder，解码器需要 ----
-(function () {
-  var r = (typeof globalThis !== 'undefined') ? globalThis : (typeof window !== 'undefined' ? window : this);
-  if (typeof r.atob !== 'function') {
-    var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    r.atob = function (s) {
-      s = String(s == null ? '' : s).replace(/[^A-Za-z0-9+/]/g, '');
-      var len = s.length, i = 0, out = '';
-      while (i < len) {
-        var b1 = CHARS.indexOf(s.charAt(i++)), b2 = CHARS.indexOf(s.charAt(i++));
-        var b3 = CHARS.indexOf(s.charAt(i++)), b4 = CHARS.indexOf(s.charAt(i++));
-        var c1 = (b1 << 2) | (b2 >> 4);
-        var c2 = ((b2 & 15) << 4) | (b3 >> 2);
-        var c3 = ((b3 & 3) << 6) | b4;
-        out += String.fromCharCode(c1);
-        if (b3 !== -1) out += String.fromCharCode(c2);
-        if (b4 !== -1) out += String.fromCharCode(c3);
-      }
-      return out;
-    };
+function __mfAtob(s) {
+  var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  s = String(s == null ? '' : s).replace(/[^A-Za-z0-9+/]/g, '');
+  var len = s.length, i = 0, out = '';
+  while (i < len) {
+    var b1 = CHARS.indexOf(s.charAt(i++)), b2 = CHARS.indexOf(s.charAt(i++));
+    var b3 = CHARS.indexOf(s.charAt(i++)), b4 = CHARS.indexOf(s.charAt(i++));
+    var c1 = (b1 << 2) | (b2 >> 4);
+    var c2 = ((b2 & 15) << 4) | (b3 >> 2);
+    var c3 = ((b3 & 3) << 6) | b4;
+    out += String.fromCharCode(c1);
+    if (b3 !== -1) out += String.fromCharCode(c2);
+    if (b4 !== -1) out += String.fromCharCode(c3);
   }
-  if (typeof r.TextDecoder !== 'function') {
-    r.TextDecoder = function () {
-      this.decode = function (bytes) {
-        var out = '', i = 0, len = bytes.length;
-        while (i < len) {
-          var c = bytes[i++];
-          if (c < 128) { out += String.fromCharCode(c); }
-          else if (c >= 192 && c < 224) { out += String.fromCharCode(((c & 31) << 6) | (bytes[i++] & 63)); }
-          else if (c >= 224 && c < 240) { out += String.fromCharCode(((c & 15) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63)); }
-          else {
-            var cp = ((c & 7) << 18) | ((bytes[i++] & 63) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63);
-            cp -= 65536;
-            out += String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 1023));
-          }
-        }
-        return out;
-      };
-    };
+  return out;
+}
+function __mfUtf8Decode(bytes) {
+  var out = '', i = 0, len = bytes.length;
+  while (i < len) {
+    var c = bytes[i++];
+    if (c < 128) { out += String.fromCharCode(c); }
+    else if (c >= 192 && c < 224) { out += String.fromCharCode(((c & 31) << 6) | (bytes[i++] & 63)); }
+    else if (c >= 224 && c < 240) { out += String.fromCharCode(((c & 15) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63)); }
+    else {
+      var cp = ((c & 7) << 18) | ((bytes[i++] & 63) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63);
+      cp -= 65536;
+      out += String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 1023));
+    }
   }
-})();
+  return out;
+}
+var __mfRoot = (typeof globalThis !== 'undefined') ? globalThis : (typeof window !== 'undefined' ? window : this);
+if (typeof atob === 'undefined') {
+  var atob = __mfAtob;
+  __mfRoot.atob = __mfAtob;
+}
+if (typeof TextDecoder === 'undefined') {
+  var TextDecoder = function () { this.decode = __mfUtf8Decode; };
+  __mfRoot.TextDecoder = TextDecoder;
+}
 /* ==== manhuafree chapter image decoder (extracted from site decoder.js) ==== */
 (function(){
   var _root = (typeof window !== "undefined" && window) || globalThis;
@@ -60,7 +60,7 @@ function _0x54d3(_0x4629b3,_0x144dc3){_0x4629b3=_0x4629b3-(0x26*0x61+0x1213*0x1+
 class ManhuaFree extends ComicSource {
   name = "G站漫畫";
   key = "manhuafree";
-  version = "1.0.2";
+  version = "1.0.3";
   minAppVersion = "1.6.0";
   url = "https://cdn.jsdelivr.net/gh/yemaoziben/venera-sources@main/manhuafree.js";
   site = "https://manhuafree.com";
