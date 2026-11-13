@@ -262,5 +262,11 @@
         "fileName": "lizimh.js",
         "key": "lizimh",
         "version": "1.2.3"
+    },
+    {
+        "name": "G站漫畫",
+        "fileName": "manhuafree.js",
+        "key": "manhuafree",
+        "version": "1.0.0"
     }
 ]
